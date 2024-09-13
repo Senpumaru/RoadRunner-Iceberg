@@ -1,0 +1,52 @@
+services:
+  iceberg-rest:
+    image: tabulario/iceberg-rest:latest
+    container_name: iceberg-rest
+    ports:
+      - "8181:8181"
+    environment:
+      - CATALOG_PROPERTIES=/etc/iceberg/catalog.properties
+    volumes:
+      - ./iceberg-catalog.properties:/etc/iceberg/catalog.properties
+    depends_on:
+      - minio
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+      - MINIO_DOMAIN=minio
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio-data:/data
+
+  mc:
+    depends_on:
+      - minio
+    image: minio/mc
+    container_name: mc
+    environment:
+      - AWS_ACCESS_KEY_ID=minioadmin
+      - AWS_SECRET_ACCESS_KEY=minioadmin
+      - AWS_REGION=us-east-1
+    entrypoint: >
+      /bin/sh -c "
+      until (/usr/bin/mc config host add minio http://minio:9000 minioadmin minioadmin) do echo '...waiting...' && sleep 1; done;
+      /usr/bin/mc rm -r --force minio/iceberg-warehouse;
+      /usr/bin/mc mb minio/iceberg-warehouse;
+      /usr/bin/mc policy set public minio/iceberg-warehouse;
+      tail -f /dev/null
+      "
+
+volumes:
+  minio-data:
+
+networks:
+  default:
+    name: roadrunner-network
+    external: true
