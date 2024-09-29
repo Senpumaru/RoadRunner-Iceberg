@@ -1,4 +1,5 @@
 services:
+
   iceberg-rest:
     image: tabulario/iceberg-rest:latest
     container_name: iceberg-rest
@@ -25,23 +26,23 @@ services:
     volumes:
       - minio-data:/data
 
-  mc:
-    depends_on:
-      - minio
-    image: minio/mc
-    container_name: mc
-    environment:
-      - AWS_ACCESS_KEY_ID=minioadmin
-      - AWS_SECRET_ACCESS_KEY=minioadmin
-      - AWS_REGION=us-east-1
-    entrypoint: >
-      /bin/sh -c "
-      until (/usr/bin/mc config host add minio http://minio:9000 minioadmin minioadmin) do echo '...waiting...' && sleep 1; done;
-      /usr/bin/mc rm -r --force minio/iceberg-warehouse;
-      /usr/bin/mc mb minio/iceberg-warehouse;
-      /usr/bin/mc policy set public minio/iceberg-warehouse;
-      tail -f /dev/null
-      "
+  # mc:
+  #   depends_on:
+  #     - minio
+  #   image: minio/mc
+  #   container_name: mc
+  #   environment:
+  #     - AWS_ACCESS_KEY_ID=minioadmin
+  #     - AWS_SECRET_ACCESS_KEY=minioadmin
+  #     - AWS_REGION=us-east-1
+  #   entrypoint: >
+  #     /bin/sh -c "
+  #     until (/usr/bin/mc config host add minio http://minio:9000 minioadmin minioadmin) do echo '...waiting...' && sleep 1; done;
+  #     /usr/bin/mc rm -r --force minio/iceberg-warehouse;
+  #     /usr/bin/mc mb minio/iceberg-warehouse;
+  #     /usr/bin/mc policy set public minio/iceberg-warehouse;
+  #     tail -f /dev/null
+  #     "
 
 volumes:
   minio-data:
