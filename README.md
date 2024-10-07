@@ -96,9 +96,19 @@ This project contains a Python script to test the connectivity between Apache Sp
 
 Execute the following command to run the connectivity test:
 
+3.5.2
 ```bash
 spark-submit --packages org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.4.2,org.apache.hadoop:hadoop-aws:3.3.4,com.amazonaws:aws-java-sdk-bundle:1.12.262 --conf spark.sql.extensions=org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions --conf spark.sql.catalog.iceberg=org.apache.iceberg.spark.SparkCatalog --conf spark.sql.catalog.iceberg.type=hadoop --conf spark.sql.catalog.iceberg.warehouse=s3a://test/warehouse iceberg_spark_connectivity_test.py
 ```
+3.3.2
+spark-submit \
+--packages org.apache.iceberg:iceberg-spark-runtime-3.3_2.12:1.4.2,org.apache.hadoop:hadoop-aws:3.2.0,com.amazonaws:aws-java-sdk-bundle:1.12.262 \
+--conf spark.sql.extensions=org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions \
+--conf spark.sql.catalog.iceberg=org.apache.iceberg.spark.SparkCatalog \
+--conf spark.sql.catalog.iceberg.type=hadoop \
+--conf spark.sql.catalog.iceberg.warehouse=s3a://test/warehouse \
+./src/python/iceberg/test_table.py
+
 
 ## What the Test Does
 
